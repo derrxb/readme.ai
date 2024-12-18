@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASES=dev,test
+    ports:
+      - "5893:5432"
+    volumes:
+      - ./app/infrastructure/database/create-dev-environment.sh:/docker-entrypoint-initdb.d/create-dev-environment.sh
