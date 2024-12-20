@@ -4,6 +4,7 @@ import marketing from "../marketing/index.json";
 import { authenticate, authenticator } from "~/services/authentication.server";
 import { redirect, useActionData } from "react-router";
 import { commitSession, getSession } from "~/services/session.server";
+import { RegisterForm } from "~/ui/organisms/register-form";
 
 export const meta = () => {
   return [
@@ -52,13 +53,13 @@ export const action = async (args: Route.ActionArgs) => {
   throw redirect("/dashboard", { headers });
 };
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const actionData = useActionData<typeof action>();
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-4xl">
-        <LoginForm errorMessage={actionData?.errors?.general} />
+        <RegisterForm errorMessage={actionData?.errors?.general} />
       </div>
     </div>
   );
