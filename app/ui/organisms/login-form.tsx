@@ -1,10 +1,10 @@
 import { Form, Link } from "react-router";
+import marketing from "~/marketing/index.json";
 import { Button } from "~/ui/atoms/button";
 import { Card, CardContent } from "~/ui/atoms/card";
 import { Input } from "~/ui/atoms/input";
 import { Label } from "~/ui/atoms/label";
 import { cn } from "~/utils/utils";
-import marketing from "~/marketing/index.json";
 import { Alert, AlertDescription, AlertTitle } from "../atoms/alert";
 
 export function LoginForm({
@@ -37,6 +37,7 @@ export function LoginForm({
                 <Input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="m@example.com"
                   required
                 />
@@ -51,13 +52,13 @@ export function LoginForm({
                     Forgot your password?
                   </Link>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type="password" name="password" required />
               </div>
               <Button type="submit" className="w-full">
                 Login
               </Button>
 
-              <div className="!hidden relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-background px-2 text-muted-foreground">
                   Or continue with
                 </span>

@@ -1,10 +1,21 @@
-import { LoginForm } from "~/ui/organisms/login-form";
-import type { Route } from "../+types/root";
-import marketing from "../marketing/index.json";
-import { authenticate, authenticator } from "~/services/authentication.server";
+import { eq } from "drizzle-orm";
 import { redirect, useActionData } from "react-router";
+import { db } from "~/infrastructure/database/index.server";
+import { users } from "~/infrastructure/database/schema.server";
+import {
+  authenticate,
+  getHashedPassword,
+} from "~/services/authentication.server";
 import { commitSession, getSession } from "~/services/session.server";
 import { RegisterForm } from "~/ui/organisms/register-form";
+import type { Route } from "../+types/root";
+import marketing from "../marketing/index.json";
+
+const getValuesFromRequest = async (formData: FormData) => {
+  const values = Object.fromEntries(formData);
+
+  return values;
+};
 
 export const meta = () => {
   return [
@@ -18,22 +29,37 @@ export const meta = () => {
   ];
 };
 
-export const loader = async (args: Route.LoaderArgs) => {
-  let user = await authenticate(args.request, "/dashboard");
-  if (!user) {
-    return null;
-  }
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  return await authenticate(request, "/dashboard");
 };
 
-export const action = async (args: Route.ActionArgs) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   let headers;
+  const formData = await request.formData();
   try {
-    const user = await authenticator.authenticate("user-pass", args.request);
+    const email = String(formData.get("email") ?? "");
+    const password = String(formData.get("password") ?? "");
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
 
-    // manually get the session
-    const session = await getSession(args.request.headers.get("cookie"));
-    // and store the user data
-    session.set("user", user);
+    if (user?.length) {
+      throw new Error("A user already exists with this email");
+    }
+
+    const newUser = await db
+      .insert(users)
+      .values({
+        email,
+        password: await getHashedPassword(password),
+      })
+      .returning()
+      .execute();
+
+    const session = await getSession(request.headers.get("cookie"));
+    session.set("user", { email: newUser?.[0]?.email, id: newUser?.[0]?.id });
 
     // commit the session
     headers = new Headers({ "Set-Cookie": await commitSession(session) });
@@ -43,7 +69,7 @@ export const action = async (args: Route.ActionArgs) => {
     if (error instanceof Response) throw error;
 
     return {
-      // values: await getValuesFromRequest(request),
+      values: await getValuesFromRequest(formData),
       errors: {
         general: (error as Error)?.message,
       },

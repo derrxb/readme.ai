@@ -16,7 +16,7 @@ export function RegisterForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden">
         <CardContent className="grid p-0 md:grid-cols-2 min-h-[640px]">
-          <Form method="POST" action="/login" className="p-6 md:p-8 my-auto">
+          <Form method="POST" action="/register" className="p-6 md:p-8 my-auto">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">Join {marketing.name}</h1>
@@ -38,6 +38,7 @@ export function RegisterForm({
                   type="email"
                   placeholder="m@example.com"
                   required
+                  name="email"
                 />
               </div>
               <div className="grid gap-2">
@@ -50,13 +51,13 @@ export function RegisterForm({
                     Forgot your password?
                   </Link>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type="password" required name="password" />
               </div>
               <Button type="submit" className="w-full">
-                Login
+                Create Account
               </Button>
 
-              <div className="!hidden relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-background px-2 text-muted-foreground">
                   Or continue with
                 </span>

@@ -48,14 +48,14 @@ authenticator.use(
         .where(eq(users.email, email))
         .limit(1);
 
-      assert(user.length, "The provided credentials are invalid");
+      assert(!user.length, "The provided credentials are invalid");
       assert(
-        comparePassword(password, user?.[0]?.password),
+        await comparePassword(password, user?.[0]?.password ?? ""),
         "The provided credentials are invalid"
       );
 
       return {
-        id: user?.[0].id,
+        id: user?.[0]?.id,
         email: user?.[0]?.email,
       };
     } catch (error) {
